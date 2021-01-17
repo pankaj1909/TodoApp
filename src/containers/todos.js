@@ -1,69 +1,61 @@
-import React, { Component } from 'react';
+import React, {useState} from 'react';
+import {connect} from 'react-redux';
+import {bindActionCreators} from "redux";
+import {addTodo, addNewCategory, deleteTodo, updateTodo, complete} from '../store/actions/actions';
 import AddTodo from "../components/addTodo";
-import { connect } from 'react-redux';
-import { add, complete, edit, update, deleteResult } from '../store/actions/actions';
+import TodoList from "../components/TodoList";
 
-class Todos extends Component {
 
-    renderEditForm = () => {
-        if (this.props.edit) {
-            return (
-                <form onSubmit={(e) => this.props.updateTodo(e)}>
-                    <input type="text" name="updateTodo" className="item" defaultValue={this.props.content} />
-                    <button className="ml-2">Update</button>
-                </form>
-            )
-        }
+function Todos({addTodo, addNewCategory, deleteTodo, updateTodo, complete,todoData: {todosList, categories}}) {
+    const [editData, setEditData] = useState({
+        id: '',
+        content: '',
+        done: false,
+        categoryData: '',
+        edit: false
+    })
+
+    function onEdit(id, content, done, category, edit = true) {
+        setEditData({id, content, done, categoryData: category, edit: edit})
     }
 
-    render() {
-        console.log(this.props)
-        const list = this.props.todosList.length > 0 ? (
-            this.props.todosList.map(todo => {
-                return (
-                    <div key={todo.id} className={todo.done ? 'done' : 'hidden'}>
-                        <span >{todo.content}</span>
-                        <button className="btn btn-primary ml-2 mt-2" onClick={this.props.deleteTodo.bind(this, todo.id)}>Delete</button>
-                        <button className="btn btn-primary ml-2 mt-2" onClick={this.props.editTodo.bind(this, todo.id, todo.content)}>Edit</button>
-                        <button className="btn btn-primary ml-2 mt-2" onClick={this.props.completeTodo.bind(this, todo.id)}>Complete</button>
-
-
+    return (
+        <div className={'col d-flex justify-content-center'}>
+            <div className="card border-dark mr-5 ml-5 mb-3 mt-3" style={{width: '600px'}}>
+                <div className="card-header font-weight-bold text-center">Todo List</div>
+                <div className="card-body">
+                    <div className={'card-title'}>
+                        {todosList && todosList.map((item, index) => (
+                            <TodoList {...item} index={index} deleteTodo={deleteTodo} onEdit={onEdit}
+                                      complete={complete}/>
+                        ))}
+                        {todosList && todosList.length === 0 && <div className={'text-center'}>No Todos</div>}
                     </div>
-                )
-            })
-
-        ) : (
-                <p>You have zero Todos !</p>
-            )
-
-        return (
-            <div className="container">
-                <center>{this.renderEditForm()}</center>
-                <center>
-                    {list}
-                    <AddTodo addTodo={this.props.addTodo} />
-                </center>
+                    <AddTodo addTodo={addTodo} editData={editData} updateTodo={updateTodo}
+                             addNewCategory={addNewCategory}
+                             onEdit={onEdit}
+                             categories={categories}/>
+                </div>
             </div>
-        );
-    }
+        </div>
+    )
+
 }
+
 
 const mapStateToProps = state => {
     return {
-        todosList: state.todosList,
-        edit: state.edit,
-        id: state.id,
-        content: state.content,
+        todoData: state.data,
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        addTodo: (value) => dispatch(add(value)),
-        deleteTodo: (id) => dispatch(deleteResult(id)),
-        editTodo: (id, content) => dispatch(edit(id, content)),
-        completeTodo: (id) => dispatch(complete(id)),
-        updateTodo: (value) => dispatch(update(value)),
+        addTodo: bindActionCreators(addTodo, dispatch),
+        addNewCategory: bindActionCreators(addNewCategory, dispatch),
+        deleteTodo: bindActionCreators(deleteTodo, dispatch),
+        updateTodo: bindActionCreators(updateTodo, dispatch),
+        complete: bindActionCreators(complete, dispatch),
     };
 };
 

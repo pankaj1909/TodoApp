@@ -1,41 +1,39 @@
-export const ADD = 'ADD';
-export const DELETE = 'DELETE';
-export const COMPLETE = 'COMPLETE';
-export const EDIT = 'EDIT';
-export const UPDATE = 'UPDATE';
+import * as actionTypes from './types'
 
-export const add = (value) => {
+export const addTodo = (value) => {
     return {
-        type: ADD,
-        content: value
+        type: actionTypes.ADD,
+        data: value
     }
 }
 
-export const deleteResult = (id) => {
+export const addNewCategory = (value) => {
     return {
-        type: DELETE,
-        ElementId: id
+        type: actionTypes.ADD_CATEGORY,
+        data: value
+    }
+}
+
+export const deleteTodo = (id) => {
+    return {
+        type: actionTypes.DELETE,
+        data: id
+    }
+}
+
+export const updateTodo = (value) => {
+    return {
+        type: actionTypes.UPDATE,
+        data: value
     }
 }
 
 export const complete = (id) => {
     return {
-        type: COMPLETE,
-        ElementId: id
+        type: actionTypes.COMPLETE,
+        data: id
     }
 }
 
-export const edit = (id, content) => {
-    return {
-        type: EDIT,
-        id: id,
-        content: content
-    }
-}
 
-export const update = (value) => {
-    return {
-        type: UPDATE,
-        value: value.target.updateTodo.value
-    }
-}
+

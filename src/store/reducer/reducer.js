@@ -1,26 +1,33 @@
-import * as actionTypes from '../actions/actions'
+import * as actionTypes from '../actions/types'
 
 const initialState = {
     todosList: [
-        { id: 1, content: 'Recharge Milk subscription', done: false },
-        { id: 2, content: 'Pay Maid', done: false },
-        { id: 3, content: 'Pay Rent', done: false }
+        {id: 1, content: 'Recharge Milk subscription', done: false, category: 'Food'},
+        {id: 2, content: 'Pay Maid', done: false, category: ''},
+        {id: 3, content: 'Pay Rent', done: false, category: ''}
     ],
-    edit: false,
-    id: null,
-    content: ''
+    categories: [
+        {id: 0, name: 'Choose Category', value: ''},
+        {id: 1, name: 'Food', value: 'Food'}
+    ],
+    data: ''
 }
 
 // Reducer
-const reducer = (state = initialState, action) => {
+export default function (state = initialState, action) {
     switch (action.type) {
         case actionTypes.ADD:
             return {
                 ...state,
-                todosList: state.todosList.concat({ id: Math.random(), content: action.content, done: false })
+                todosList: [...state.todosList, action.data]
+            };
+        case actionTypes.ADD_CATEGORY:
+            return {
+                ...state,
+                categories: [...state.categories, action.data]
             };
         case actionTypes.DELETE:
-            const todo = state.todosList.filter(todo => todo.id !== action.ElementId)
+            const todo = state.todosList.filter(todo => todo.id !== action.data)
             return {
                 ...state,
                 todosList: todo
@@ -29,35 +36,26 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 todosList: state.todosList.map(item => {
-                    if (item.id === action.ElementId) {
+                    if (item.id === action.data) {
                         item['done'] = true;
                         return item;
                     }
                     return item;
                 })
             };
-        case actionTypes.EDIT:
-            return {
-                ...state,
-                edit: true,
-                id: action.id,
-                content: action.content
-            };
         case actionTypes.UPDATE:
             return {
                 ...state,
                 todosList: state.todosList.map(item => {
-                    if (item.id === state.id) {
-                        item['content'] = action.value;
+                    if (item.id === action.data.id) {
+                        item['content'] = action.data.content;
+                        item['category'] = action.data.category;
                         return item;
                     }
                     return item;
                 }),
-                edit: false
             };
     }
 
     return state;
 }
-
-export default reducer;
